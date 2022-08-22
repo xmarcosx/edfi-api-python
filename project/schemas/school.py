@@ -4,12 +4,16 @@ from datetime import datetime, date
 from typing import Dict, List
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 
 
 class Period(BaseModel):
-    beginDate: datetime
-    endDate: datetime
+    beginDate: date
+    endDate: date
+
+    @validator("beginDate", "endDate")
+    def parse_date(cls, value):
+        return datetime.combine(value, datetime.min.time())
 
 
 class Address(BaseModel):
@@ -38,10 +42,14 @@ class InternationalAddress(BaseModel):
     addressLine2: str
     addressLine3: str
     addressLine4: str
-    beginDate: datetime
-    endDate: datetime
+    beginDate: date
+    endDate: date
     latitude: str = None
     longitude: str = None
+
+    @validator("beginDate", "endDate")
+    def parse_date(cls, value):
+        return datetime.combine(value, datetime.min.time())
 
 
 class CharterApprovalSchoolYearType(BaseModel):
