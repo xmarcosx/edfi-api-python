@@ -11,6 +11,7 @@ class SchoolDAO:
     def create(self, school_create: SchoolCreate) -> School:
         data = school_create.dict()
         data["id"] = str(data["id"])
+        print(data)
         doc_ref = db.collection(self.collection_name).document(str(school_create.id))
         doc_ref.set(data)
         return self.get(school_create.id)

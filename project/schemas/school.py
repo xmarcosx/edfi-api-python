@@ -8,8 +8,8 @@ from pydantic import BaseModel, Field
 
 
 class Period(BaseModel):
-    beginDate: date
-    endDate: date
+    beginDate: datetime
+    endDate: datetime
 
 
 class Address(BaseModel):
@@ -38,8 +38,8 @@ class InternationalAddress(BaseModel):
     addressLine2: str
     addressLine3: str
     addressLine4: str
-    beginDate: date
-    endDate: date
+    beginDate: datetime
+    endDate: datetime
     latitude: str = None
     longitude: str = None
 
