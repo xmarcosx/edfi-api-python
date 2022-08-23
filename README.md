@@ -1,7 +1,5 @@
 # edfi-api-python
-Ed-Fi API written in python using a Firestore backend
-
-Service account with *Cloud Datastore User* permissions
+Ed-Fi API written in python using a MongoDB backend
 
 ```sh
 poetry install;

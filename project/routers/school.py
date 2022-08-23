@@ -1,41 +1,46 @@
+import os
 from typing import List
 
-from fastapi import APIRouter, Body, HTTPException, Query
-from pydantic.types import UUID4
-
-from schemas.school import School, SchoolCreate, SchoolUpdate
-from services.school import SchoolService
+import motor.motor_asyncio
+from fastapi import APIRouter, Body, HTTPException, Query, status
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse, Response
+from schemas.school import SchoolModel, UpdateSchoolModel
 
 router = APIRouter()
-school_service = SchoolService()
+
+client = motor.motor_asyncio.AsyncIOMotorClient(os.environ["MONGODB_URL"])
+db = client.edfi
 
 
-@router.post("/schools", response_model=School, tags=["schools"])
-def create_school(school_create: SchoolCreate = Body(...)) -> School:
-    return school_service.create_school(school_create)
+@router.post("/schools", response_model=SchoolModel, tags=["schools"])
+async def create_school(school: SchoolModel = Body(...)) -> SchoolModel:
+    new_school = await db["schools"].insert_one(school)
+    created_school = await db["schools"].find_one({"_id": new_school.inserted_id})
+    return JSONResponse(status_code=status.HTTP_201_CREATED, content=created_school)
 
 
-@router.get("/schools/{id}", response_model=School, tags=["schools"])
-def get_school(id: UUID4) -> School:
-    school = school_service.get_school(id)
-    if not school:
-        raise HTTPException(status_code=404, detail="School not found.")
-    return school
+# @router.get("/schools/{id}", response_model=SchoolModel, tags=["schools"])
+# def get_school(id: UUID4) -> SchoolModel:
+#     school = school_service.get_school(id)
+#     if not school:
+#         raise HTTPException(status_code=404, detail="School not found.")
+#     return school
 
 
 @router.get(
     "/schools",
-    response_model=List[School],
+    response_model=List[SchoolModel],
     tags=["schools"],
     description="This GET operation provides access to resources using the 'Get' search pattern. The values of any properties of the resource that are specified will be used to return all matching results (if it exists).",
 )
-def list_schools(
+async def list_schools(
     offset: int = Query(
-        0,
+        default=0,
         description="Indicates how many items should be skipped before returning results.",
     ),
     limit: int = Query(
-        2500,
+        default=2500,
         description="Indicates the maximum number of items that should be returned in the results.",
     ),
     total_count: bool = Query(
@@ -101,22 +106,22 @@ def list_schools(
         alias="titleIPartASchoolDesignationDescriptor",
         description="Denotes the Title I Part A designation for the school.",
     ),
-) -> List[School]:
-    schools = school_service.list_schools()
+) -> List[SchoolModel]:
+    schools = await db["schools"].find().to_list(1000)
     return schools
 
 
-@router.put("/schools/{id}", response_model=School, tags=["schools"])
-def update_school(id: UUID4, school_update: SchoolUpdate = Body(...)) -> School:
-    school = school_service.get_school(id)
-    if not school:
-        raise HTTPException(status_code=404, detail="School not found.")
-    return school_service.update_school(id, school_update)
+# @router.put("/schools/{id}", response_model=SchoolModel, tags=["schools"])
+# def update_school(id: UUID4, school_update: UpdateSchoolModel = Body(...)) -> SchoolModel:
+#     school = school_service.get_school(id)
+#     if not school:
+#         raise HTTPException(status_code=404, detail="School not found.")
+#     return school_service.update_school(id, school_update)
 
 
-@router.delete("/schools/{id}", response_model=School, tags=["schools"])
-def delete_school(id: UUID4) -> School:
-    school = school_service.get_school(id)
-    if not school:
-        raise HTTPException(status_code=404, detail="School not found.")
-    return school_service.delete_school(id)
+# @router.delete("/schools/{id}", response_model=SchoolModel, tags=["schools"])
+# def delete_school(id: UUID4) -> SchoolModel:
+#     school = school_service.get_school(id)
+#     if not school:
+#         raise HTTPException(status_code=404, detail="School not found.")
+#     return school_service.delete_school(id)
