@@ -15,7 +15,17 @@ tags_metadata = [
     },
 ]
 
-api = FastAPI(openapi_tags=tags_metadata)
+description = """
+The Ed-Fi ODS / API enables applications to read and write education data stored in an Ed-Fi ODS through a secure REST interface.
+___
+*Note: Consumers of ODS / API information should sanitize all data for display and storage. The ODS / API provides reasonable safeguards against cross-site scripting attacks and other malicious content, but the platform does not and cannot guarantee that the data it contains is free of all potentially harmful content.*
+___
+"""
+
+api = FastAPI(
+    title="Ed-Fi Operational Data Store API",
+    description=description,
+    openapi_tags=tags_metadata)
 
 
 @api.middleware("http")
