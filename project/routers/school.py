@@ -15,6 +15,7 @@ db = client.edfi
 
 @router.post("/schools", response_model=SchoolModel, tags=["schools"])
 async def create_school(school: SchoolModel = Body(...)) -> SchoolModel:
+    print(school)
     new_school = await db["schools"].insert_one(school)
     created_school = await db["schools"].find_one({"_id": new_school.inserted_id})
     return JSONResponse(status_code=status.HTTP_201_CREATED, content=created_school)
