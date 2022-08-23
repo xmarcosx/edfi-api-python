@@ -38,24 +38,33 @@ def list_schools(
         2500,
         description="Indicates the maximum number of items that should be returned in the results.",
     ),
-    totalCount: bool = Query(
-        False,
+    total_count: bool = Query(
+        default=False,
+        alias="totalCount",
         description="Indicates if the total number of items available should be returned in the 'Total-Count' header of the response. If set to false, 'Total-Count' header will not be provided.",
     ),
-    schoolId: int
-    | None = Query(None, description="The identifier assigned to a school."),
-    localEducationAgencyId: int
+    school_id: int
     | None = Query(
-        None, description="The identifier assigned to a local education agency."
+        default=None,
+        alias="schoolId",
+        description="The identifier assigned to a school.",
     ),
-    charterApprovalSchoolYear: int
+    local_education_agency_id: int
     | None = Query(
-        None,
+        default=None,
+        alias="localEducationAgencyId",
+        description="The identifier assigned to a local education agency.",
+    ),
+    charter_approval_school_year: int
+    | None = Query(
+        default=None,
+        alias="charterApprovalSchoolYear",
         description="The school year in which a charter school was initially approved.",
     ),
-    administrativeFundingControlDescriptor: str
+    administrative_funding_control_descriptor: str
     | None = Query(
-        None,
+        default=None,
+        alias="administrativeFundingControlDescriptor",
         description="The type of education institution as classified by its funding source, for example public or private.",
     ),
     charterApprovalAgencyTypeDescriptor: str
@@ -63,26 +72,34 @@ def list_schools(
         None,
         description="The type of agency that approved the establishment or continuation of a charter school.",
     ),
-    charterStatusDescriptor: str
+    charter_status_descriptor: str
     | None = Query(
-        None,
+        default=None,
+        alias="charterStatusDescriptor",
         description="A school or agency providing free public elementary or secondary education to eligible students under a specific charter granted by the state legislature or other appropriate authority and designated by such authority to be a charter school.",
     ),
-    internetAccessDescriptor: str
-    | None = Query(None, description="The type of Internet access available."),
+    internet_access_descriptor: str
+    | None = Query(
+        default=None,
+        alias="internetAccessDescriptor",
+        description="The type of Internet access available.",
+    ),
     magnetSpecialProgramEmphasisSchoolDescriptor: str
     | None = Query(
         None,
         description="A school that has been designed: 1) to attract students of different racial/ethnic backgrounds for the purpose of reducing, preventing, or eliminating racial isolation; and/or 2) to provide an academic or social focus on a particular theme (e.g., science/math, performing arts, gifted/talented, or foreign language).",
     ),
-    schoolTypeDescriptor: str
+    school_type_descriptor: str
     | None = Query(
-        None,
+        default=None,
+        alias="schoolTypeDescriptor",
         description="The type of education institution as classified by its primary focus.",
     ),
-    titleIPartASchoolDesignationDescriptor: str
+    title_i_part_a_school_designation_descriptor: str
     | None = Query(
-        None, description="Denotes the Title I Part A designation for the school."
+        default=None,
+        alias="titleIPartASchoolDesignationDescriptor",
+        description="Denotes the Title I Part A designation for the school.",
     ),
 ) -> List[School]:
     schools = school_service.list_schools()
