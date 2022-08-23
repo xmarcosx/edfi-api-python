@@ -94,6 +94,7 @@ class GradeLevel(BaseModel):
 class SchoolCategory(BaseModel):
     schoolCategoryDescriptor: str
 
+
 # school models
 class SchoolBase(BaseModel):
     schoolId: int
@@ -111,7 +112,7 @@ class SchoolBase(BaseModel):
     magnetSpecialProgramEmphasisSchoolDescriptor: str = None
     operationalStatusDescriptor: str = None
     localEducationAgencyReference: LocalEducationAgency
-    schoolCategories: List[SchoolCategory]= None
+    schoolCategories: List[SchoolCategory] = None
     schoolTypeDescriptor: str = None
     shortNameOfInstitution: str = None
     titleIPartASchoolDesignationDescriptor: str = None

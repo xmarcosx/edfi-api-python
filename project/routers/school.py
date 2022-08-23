@@ -24,10 +24,22 @@ def get_school(id: UUID4) -> School:
 
 
 @router.get("/schools", response_model=List[School], tags=["schools"])
-def list_schools() -> List[School]:
+def list_schools(
+    offset: int = 0,
+    limit: int = 2500,
+    totalCount: bool = False,
+    schoolId: int | None = None,
+    localEducationAgencyId: int | None = None,
+    charterApprovalSchoolYear: int | None = None,
+    administrativeFundingControlDescriptor: str | None = None,
+    charterApprovalAgencyTypeDescriptor: str | None = None,
+    charterStatusDescriptor: str | None = None,
+    internetAccessDescriptor: str | None = None,
+    magnetSpecialProgramEmphasisSchoolDescriptor: str | None = None,
+    schoolTypeDescriptor: str | None = None,
+    titleIPartASchoolDesignationDescriptor: str | None = None,
+) -> List[School]:
     schools = school_service.list_schools()
-    if not schools:
-        raise HTTPException(status_code=404, detail="Schools not found.")
     return schools
 
 

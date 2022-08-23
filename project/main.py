@@ -25,7 +25,8 @@ ___
 api = FastAPI(
     title="Ed-Fi Operational Data Store API",
     description=description,
-    openapi_tags=tags_metadata)
+    openapi_tags=tags_metadata,
+)
 
 
 @api.middleware("http")
