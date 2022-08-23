@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Body, HTTPException
+from fastapi import APIRouter, Body, HTTPException, Query
 from pydantic.types import UUID4
 
 from schemas.school import School, SchoolCreate, SchoolUpdate
@@ -25,19 +25,60 @@ def get_school(id: UUID4) -> School:
 
 @router.get("/schools", response_model=List[School], tags=["schools"])
 def list_schools(
-    offset: int = 0,
-    limit: int = 2500,
-    totalCount: bool = False,
-    schoolId: int | None = None,
-    localEducationAgencyId: int | None = None,
-    charterApprovalSchoolYear: int | None = None,
-    administrativeFundingControlDescriptor: str | None = None,
-    charterApprovalAgencyTypeDescriptor: str | None = None,
-    charterStatusDescriptor: str | None = None,
-    internetAccessDescriptor: str | None = None,
-    magnetSpecialProgramEmphasisSchoolDescriptor: str | None = None,
-    schoolTypeDescriptor: str | None = None,
-    titleIPartASchoolDesignationDescriptor: str | None = None,
+    offset: int = Query(
+        0,
+        description="Indicates how many items should be skipped before returning results.",
+    ),
+    limit: int = Query(
+        2500,
+        description="Indicates the maximum number of items that should be returned in the results.",
+    ),
+    totalCount: bool = Query(
+        False,
+        description="Indicates if the total number of items available should be returned in the 'Total-Count' header of the response. If set to false, 'Total-Count' header will not be provided.",
+    ),
+    schoolId: int
+    | None = Query(None, description="The identifier assigned to a school."),
+    localEducationAgencyId: int
+    | None = Query(
+        None, description="The identifier assigned to a local education agency."
+    ),
+    charterApprovalSchoolYear: int
+    | None = Query(
+        None,
+        description="The school year in which a charter school was initially approved.",
+    ),
+    administrativeFundingControlDescriptor: str
+    | None = Query(
+        None,
+        description="The type of education institution as classified by its funding source, for example public or private.",
+    ),
+    charterApprovalAgencyTypeDescriptor: str
+    | None = Query(
+        None,
+        description="The type of agency that approved the establishment or continuation of a charter school.",
+    ),
+    charterStatusDescriptor: str
+    | None = Query(
+        None,
+        description="A school or agency providing free public elementary or secondary education to eligible students under a specific charter granted by the state legislature or other appropriate authority and designated by such authority to be a charter school.",
+    ),
+    internetAccessDescriptor: str
+    | None = Query(None, description="The type of Internet access available."),
+    magnetSpecialProgramEmphasisSchoolDescriptor: str
+    | None = Query(
+        None,
+        description="A school that has been designed: 1) to attract students of different racial/ethnic backgrounds for the purpose of reducing, preventing, or eliminating racial isolation; and/or 2) to provide an academic or social focus on a particular theme (e.g., science/math, performing arts, gifted/talented, or foreign language).",
+    ),
+    schoolTypeDescriptor: str
+    | None = Query(
+        None,
+        description="The type of education institution as classified by its primary focus.",
+    ),
+    titleIPartASchoolDesignationDescriptor: str
+    | None = Query(
+        None, description="Denotes the Title I Part A designation for the school."
+    ),
 ) -> List[School]:
     schools = school_service.list_schools()
     return schools
