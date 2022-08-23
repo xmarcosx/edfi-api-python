@@ -23,7 +23,12 @@ def get_school(id: UUID4) -> School:
     return school
 
 
-@router.get("/schools", response_model=List[School], tags=["schools"])
+@router.get(
+    "/schools",
+    response_model=List[School],
+    tags=["schools"],
+    description="This GET operation provides access to resources using the 'Get' search pattern. The values of any properties of the resource that are specified will be used to return all matching results (if it exists).",
+)
 def list_schools(
     offset: int = Query(
         0,
