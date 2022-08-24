@@ -99,31 +99,31 @@ class EducationOrganizationAddress(BaseModel):
         alias="congressionalDistrict",
         description="The congressional district in which an address is located.",
     )
-    county_fips_code: str| None = Field(
+    county_fips_code: str | None = Field(
         default=None,
         title="countyFIPSCode",
         alias="countyFIPSCode",
         description="The Federal Information Processing Standards (FIPS) numeric code for the county issued by the National Institute of Standards and Technology (NIST). Counties are considered to be the 'first-order subdivisions' of each State and statistically equivalent entity, regardless of their local designations (county, parish, borough, etc.) Counties in different States will have the same code. A unique county number is created when combined with the 2-digit FIPS State Code.",
     )
-    do_not_publish_indicator: bool| None = Field(
+    do_not_publish_indicator: bool | None = Field(
         default=None,
         title="doNotPublishIndicator",
         alias="doNotPublishIndicator",
         description="An indication that the address should not be published.",
     )
-    latitude: str| None = Field(
+    latitude: str | None = Field(
         default=None,
         title="latitude",
         alias="latitude",
         description="The geographic latitude of the physical address.",
     )
-    longitude: str| None = Field(
+    longitude: str | None = Field(
         default=None,
         title="longitude",
         alias="longitude",
         description="The geographic longitude of the physical address.",
     )
-    name_of_county: str| None = Field(
+    name_of_county: str | None = Field(
         default=None,
         title="nameOfCounty",
         alias="nameOfCounty",
@@ -131,7 +131,7 @@ class EducationOrganizationAddress(BaseModel):
     )
     periods: List[EducationOrganizationPeriod] | None = Field(
         default=None,
-        description="An unordered collection of educationOrganizationAddressPeriods. The time periods for which the address is valid. For physical addresses, the periods in which the person lived at that address."
+        description="An unordered collection of educationOrganizationAddressPeriods. The time periods for which the address is valid. For physical addresses, the periods in which the person lived at that address.",
     )
 
 
@@ -153,7 +153,13 @@ class CharterApprovalSchoolYearType(BaseModel):
 
 
 class EducationOrganizationCategory(BaseModel):
-    educationOrganizationCategoryDescriptor: str
+    education_organization_category_descriptor: str = Field(
+        title="educationOrganizationCategoryDescriptor",
+        alias="educationOrganizationCategoryDescriptor",
+        example="uri://ed-fi.org/EducationOrganizationCategoryDescriptor#School",
+        description="The classification of the education agency within the geographic boundaries of a state according to the level of administrative and operational control granted by the state.",
+        identity="true",
+    )
 
 
 class IdentificationCode(BaseModel):
@@ -183,8 +189,14 @@ class PostSecondaryInstitutionReference(BaseModel):
     postSecondaryInstitutionId: int
 
 
-class GradeLevel(BaseModel):
-    gradeLevelDescriptor: str
+class SchoolGradeLevel(BaseModel):
+    grade_level_descriptor: str = Field(
+        title="gradeLevelDescriptor",
+        alias="gradeLevelDescriptor",
+        example="uri://ed-fi.org/GradeLevelDescriptor#Ninth grade",
+        description="The grade levels served at the school.",
+        identity="true",
+    )
 
 
 class SchoolCategory(BaseModel):
@@ -206,32 +218,41 @@ class SchoolBaseModel(BaseModel):
         example="Grand Oaks High School",
         description="The full, legally accepted name of the institution.",
     )
-    addresses: List[EducationOrganizationAddress] | None = Field(
-        default=None,
-        title="addresses",
-        description="An unordered collection of educationOrganizationAddresses. The set of elements that describes an address for the education entity, including the street address, city, state, ZIP code, and ZIP code + 4."
-    )
-    administrativeFundingControlDescriptor: str | None = None
-    charterApprovalSchoolYearTypeReference: CharterApprovalSchoolYearType = None
-    charterStatusDescriptor: str = None
-    educationOrganizationCategories: List[EducationOrganizationCategory]
-    identificationCodes: List[IdentificationCode] = None
-    indicators: List[Indicator] = None
-    institutionTelephones: List[InstitutionTelephone] = None
-    internationalAddresses: List[InternationalAddress] = None
-    internetAccessDescriptor: str = None
-    magnetSpecialProgramEmphasisSchoolDescriptor: str = None
-    operationalStatusDescriptor: str = None
-    localEducationAgencyReference: LocalEducationAgency
-    schoolCategories: List[SchoolCategory] = None
-    schoolTypeDescriptor: str = None
-    shortNameOfInstitution: str = None
-    titleIPartASchoolDesignationDescriptor: str = None
-    gradeLevels: List[GradeLevel]
-    webSite: str = None
+    # addresses: List[EducationOrganizationAddress] | None = Field(
+    #     default=None,
+    #     title="addresses",
+    #     description="An unordered collection of educationOrganizationAddresses. The set of elements that describes an address for the education entity, including the street address, city, state, ZIP code, and ZIP code + 4.",
+    # )
+    # administrativeFundingControlDescriptor: str | None = None
+    # charterApprovalSchoolYearTypeReference: CharterApprovalSchoolYearType = None
+    # charterStatusDescriptor: str = None
+    # education_organization_categories: List[EducationOrganizationCategory] = Field(
+    #     title="educationOrganizationCategories",
+    #     alias="educationOrganizationCategories",
+    #     description="An unordered collection of educationOrganizationCategories. The classification of the education agency within the geographic boundaries of a state according to the level of administrative and operational control granted by the state.",
+    # )
+    # identificationCodes: List[IdentificationCode] = None
+    # indicators: List[Indicator] = None
+    # institutionTelephones: List[InstitutionTelephone] = None
+    # internationalAddresses: List[InternationalAddress] = None
+    # internetAccessDescriptor: str = None
+    # magnetSpecialProgramEmphasisSchoolDescriptor: str = None
+    # operationalStatusDescriptor: str = None
+    # localEducationAgencyReference: LocalEducationAgency
+    # schoolCategories: List[SchoolCategory] = None
+    # schoolTypeDescriptor: str = None
+    # shortNameOfInstitution: str = None
+    # titleIPartASchoolDesignationDescriptor: str = None
+    # grade_levels: List[SchoolGradeLevel] = Field(
+    #     title="gradeLevels",
+    #     alias="gradeLevels",
+    #     description="An unordered collection of schoolGradeLevels. The grade levels served at the school.",
+    # )
+    # webSite: str = None
+
 
 # class CreateSchoolModel(SchoolBaseModel):
-#     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+#     _id: PyObjectId = Field(default_factory=PyObjectId, alias="id")
 #     _lastModifiedDate: datetime = Field(default_factory=datetime.utcnow)
 
 #     class Config:
@@ -245,11 +266,13 @@ class UpdateSchoolModel(SchoolBaseModel):
 
 
 class SchoolModel(SchoolBaseModel):
-    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
-    _lastModifiedDate: datetime = Field(default_factory=datetime.utcnow)
+    _id: PyObjectId = Field(default_factory=PyObjectId, alias="id")
+    # id: int = Field(alias="id")
+    last_modified_date: datetime = Field(default_factory=datetime.utcnow, alias="_lastModifiedDate")
 
     class Config:
-        # orm_mode = True
+        orm_mode = True
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
+        underscore_attrs_are_private = False
