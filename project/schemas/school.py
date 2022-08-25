@@ -4,8 +4,9 @@ from datetime import datetime, date
 from typing import Dict, List
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseConfig, BaseModel, Field, validator, Extra
 from bson import ObjectId
+from bson.errors import InvalidId
 
 
 class PyObjectId(ObjectId):
@@ -249,16 +250,46 @@ class SchoolBaseModel(BaseModel):
     #     description="An unordered collection of schoolGradeLevels. The grade levels served at the school.",
     # )
     # webSite: str = None
+    class Config(BaseConfig):
+        allow_population_by_field_name = True
+        json_encoders = {
+            datetime: lambda dt: dt.isoformat(),
+            ObjectId: lambda oid: str(oid),
+        }
+
+    @classmethod
+    def from_mongo(cls, data: dict):
+        """We must convert _id into "id". """
+        if not data:
+            return data
+        id = data.pop('_id', None)
+        return cls(**dict(data, id=id))
+
+    def mongo(self, **kwargs):
+        exclude_unset = kwargs.pop('exclude_unset', False)
+        by_alias = kwargs.pop('by_alias', True)
+
+        parsed = self.dict(
+            exclude_unset=exclude_unset,
+            by_alias=by_alias,
+            **kwargs,
+        )
+
+        # Mongo uses `_id` as default key. We should stick to that as well.
+        if '_id' not in parsed and 'id' in parsed:
+            parsed['_id'] = parsed.pop('id')
+
+        return parsed
 
 
-# class CreateSchoolModel(SchoolBaseModel):
-#     _id: PyObjectId = Field(default_factory=PyObjectId, alias="id")
-#     _lastModifiedDate: datetime = Field(default_factory=datetime.utcnow)
+class CreateSchoolModel(SchoolBaseModel):
+    # id: PyObjectId = Field(default_factory=PyObjectId)
+    # _lastModifiedDate: datetime = Field(default_factory=datetime.utcnow)
 
-#     class Config:
-#         allow_population_by_field_name = True
-#         arbitrary_types_allowed = True
-#         json_encoders = {ObjectId: str}
+    class Config:
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
 
 
 class UpdateSchoolModel(SchoolBaseModel):
@@ -266,13 +297,10 @@ class UpdateSchoolModel(SchoolBaseModel):
 
 
 class SchoolModel(SchoolBaseModel):
-    _id: PyObjectId = Field(default_factory=PyObjectId, alias="id")
-    # id: int = Field(alias="id")
+    id: PyObjectId = Field(default_factory=PyObjectId)
     last_modified_date: datetime = Field(default_factory=datetime.utcnow, alias="_lastModifiedDate")
 
     class Config:
-        orm_mode = True
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
-        underscore_attrs_are_private = False

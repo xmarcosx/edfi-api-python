@@ -5,7 +5,7 @@ import motor.motor_asyncio
 from fastapi import APIRouter, Body, HTTPException, Query, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse, Response
-from schemas.school import SchoolModel, UpdateSchoolModel
+from schemas.school import SchoolModel, CreateSchoolModel, UpdateSchoolModel
 from bson import json_util
 router = APIRouter()
 
@@ -13,10 +13,17 @@ client = motor.motor_asyncio.AsyncIOMotorClient(os.environ["MONGODB_URL"])
 
 
 @router.post("/schools", response_model=SchoolModel, tags=["schools"])
-async def create_school(school: SchoolModel = Body(...)) -> SchoolModel:
-    new_school = await client.edfi.schools.insert_one(jsonable_encoder(school))
-    created_school = await client.edfi.schools.find_one({"_id": new_school.inserted_id})
-    return JSONResponse(status_code=status.HTTP_201_CREATED, content=json.loads(json_util.dumps(created_school)))
+async def create_school(school: CreateSchoolModel = Body(...)) -> SchoolModel:
+    # create SchoolModel to add in _id and last_modified_date fields
+    # store in mongo
+    new_school = await client.edfi.schools.insert_one(SchoolModel(**school.dict()).mongo())
+    # retrieve newly created record from mongo
+    created = await client.edfi.schools.find_one({"_id": new_school.inserted_id})
+    # validate mongo document
+    validated = SchoolModel(**created).dict(by_alias=True)
+    print(SchoolModel(**created).dict(by_alias=True))
+    print(SchoolModel.from_mongo(created).dict(by_alias=True))
+    return JSONResponse(status_code=status.HTTP_201_CREATED, content={})
 
 
 # @router.get("/schools/{id}", response_model=SchoolModel, tags=["schools"])
@@ -107,8 +114,7 @@ async def list_schools(
     ),
 ) -> List[SchoolModel]:
     schools = await client.edfi.schools.find().skip(offset).limit(limit).to_list(limit)
-    print(schools)
-    return schools
+    return [SchoolModel.from_mongo(record) for record in schools]
 
 
 # @router.put("/schools/{id}", response_model=SchoolModel, tags=["schools"])
