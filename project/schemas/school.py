@@ -276,9 +276,12 @@ class SchoolBaseModel(BaseModel):
         )
 
         # Mongo uses `_id` as default key. We should stick to that as well.
-        if "_id" not in parsed and "id" in parsed:
-            parsed["_id"] = parsed.pop("id")
-
+        # if "_id" not in parsed and "id" in parsed:
+        #     parsed["_id"] = parsed.pop("id")
+        if "_id" in parsed:
+            parsed.pop("_id")
+        if "id" in parsed:
+            parsed.pop("id")
         return parsed
 
 
@@ -297,7 +300,7 @@ class UpdateSchoolModel(SchoolBaseModel):
 
 
 class SchoolModel(SchoolBaseModel):
-    id: PyObjectId = Field(default_factory=PyObjectId)
+    id: PyObjectId | None = None # Field(default_factory=PyObjectId)
     last_modified_date: datetime = Field(
         default_factory=datetime.utcnow, alias="_lastModifiedDate"
     )

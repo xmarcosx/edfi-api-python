@@ -48,13 +48,23 @@ async def create_school(school: CreateSchoolModel = Body(...)) -> SchoolModel:
     Converts to SchoolModel allowing id and last_modified_date to populate
     Document inserted and retrieved
     """
-    new_school = await client.edfi.schools.insert_one(
-        SchoolModel(**school.dict()).mongo()
+    result = await client.edfi.schools.replace_one(
+        filter={"school_id": school.school_id},
+        replacement=SchoolModel(**school.dict()).mongo(),
+        upsert=True
     )
-    if new_school.acknowledged:
-        created = await client.edfi.schools.find_one({"_id": new_school.inserted_id})
+    # if new document was created
+    if result.upserted_id:
+        created = await client.edfi.schools.find_one({"_id": result.upserted_id})
         return JSONResponse(
             status_code=status.HTTP_201_CREATED,
+            content=jsonable_encoder(SchoolModel.from_mongo(created)),
+        )
+    # if existing document was modified
+    elif result.modified_count == 1:
+        created = await client.edfi.schools.find_one({"school_id": school.school_id})
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
             content=jsonable_encoder(SchoolModel.from_mongo(created)),
         )
     else:
