@@ -26,7 +26,7 @@ api = FastAPI(
     title="Ed-Fi Operational Data Store API",
     description=description,
     openapi_tags=tags_metadata,
-    swagger_ui_parameters={"defaultModelsExpandDepth": -1, "docExpansion": "none"}
+    swagger_ui_parameters={"defaultModelsExpandDepth": -1, "docExpansion": "none"},
 )
 
 
@@ -39,9 +39,7 @@ async def add_process_time_header(request: Request, call_next: Callable) -> Any:
     return response
 
 
-@api.get(
-    "/", include_in_schema=False
-)
+@api.get("/", include_in_schema=False)
 def get_metadata():
     return {
         "version": "0.1.0",

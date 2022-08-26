@@ -7,23 +7,58 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse, Response
 from schemas.school import SchoolModel, CreateSchoolModel, UpdateSchoolModel
 from bson import json_util
+
 router = APIRouter()
 
 client = motor.motor_asyncio.AsyncIOMotorClient(os.environ["MONGODB_URL"])
 
+responses = {
+    200: {"description": "The resource was updated."},
+    201: {"description": "The resource was created."},
+    400: {
+        "description": "Bad Request. The request was invalid and cannot be completed. See the response body for specific validation errors. This will typically be an issue with the query parameters or their values."
+    },
+    401: {
+        "description": "Unauthorized. The request requires authentication. The OAuth bearer token was either not provided or is invalid. The operation may succeed once authentication has been successfully completed."
+    },
+    403: {
+        "description": "Forbidden. The request cannot be completed in the current authorization context. Contact your administrator if you believe this operation should be allowed."
+    },
+    405: {
+        "description": "Method Is Not Allowed. When the Snapshot-Identifier header is present the method is not allowed."
+    },
+    409: {
+        "description": "Conflict. The request cannot be completed because it would result in an invalid state. See the response body for details."
+    },
+    412: {
+        "description": "The resource's current server-side ETag value does not match the supplied If-Match header value in the request. This indicates the resource has been modified by another consumer."
+    },
+    500: {
+        "description": "An unhandled error occurred on the server. See the response body for details."
+    },
+}
 
-@router.post("/schools", response_model=SchoolModel, tags=["schools"])
+
+@router.post(
+    "/schools", response_model=SchoolModel, responses={**responses}, tags=["schools"]
+)
 async def create_school(school: CreateSchoolModel = Body(...)) -> SchoolModel:
-    # create SchoolModel to add in _id and last_modified_date fields
-    # store in mongo
-    new_school = await client.edfi.schools.insert_one(SchoolModel(**school.dict()).mongo())
-    # retrieve newly created record from mongo
-    created = await client.edfi.schools.find_one({"_id": new_school.inserted_id})
-    # validate mongo document
-    validated = SchoolModel(**created).dict(by_alias=True)
-    print(SchoolModel(**created).dict(by_alias=True))
-    print(SchoolModel.from_mongo(created).dict(by_alias=True))
-    return JSONResponse(status_code=status.HTTP_201_CREATED, content={})
+    """
+    Accepts json matching pydantic model createschoolmodel
+    Converts to SchoolModel allowing id and last_modified_date to populate
+    Document inserted and retrieved
+    """
+    new_school = await client.edfi.schools.insert_one(
+        SchoolModel(**school.dict()).mongo()
+    )
+    if new_school.acknowledged:
+        created = await client.edfi.schools.find_one({"_id": new_school.inserted_id})
+        return JSONResponse(
+            status_code=status.HTTP_201_CREATED,
+            content=jsonable_encoder(SchoolModel.from_mongo(created)),
+        )
+    else:
+        raise HTTPException(status_code=409, detail="Unable to store document.")
 
 
 # @router.get("/schools/{id}", response_model=SchoolModel, tags=["schools"])
