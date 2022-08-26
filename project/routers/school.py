@@ -1,12 +1,13 @@
+import json
 import os
 from typing import List
-import json
+
 import motor.motor_asyncio
+from bson.objectid import ObjectId
 from fastapi import APIRouter, Body, HTTPException, Query, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse, Response
-from schemas.school import SchoolModel, CreateSchoolModel, UpdateSchoolModel
-from bson import json_util
+from schemas.school import CreateSchoolModel, SchoolModel, UpdateSchoolModel
 
 router = APIRouter()
 
@@ -71,12 +72,12 @@ async def create_school(school: CreateSchoolModel = Body(...)) -> SchoolModel:
         raise HTTPException(status_code=409, detail="Unable to store document.")
 
 
-# @router.get("/schools/{id}", response_model=SchoolModel, tags=["schools"])
-# def get_school(id: UUID4) -> SchoolModel:
-#     school = school_service.get_school(id)
-#     if not school:
-#         raise HTTPException(status_code=404, detail="School not found.")
-#     return school
+@router.get("/schools/{id}", response_model=SchoolModel, tags=["schools"])
+async def get_school(id: str) -> SchoolModel:
+    result = await client.edfi.schools.find_one({"_id": ObjectId(id)})
+    if not result:
+        raise HTTPException(status_code=404, detail="School not found.")
+    return SchoolModel.from_mongo(result)
 
 
 @router.get(
