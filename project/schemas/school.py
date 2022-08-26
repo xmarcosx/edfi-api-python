@@ -163,18 +163,52 @@ class EducationOrganizationCategory(BaseModel):
     )
 
 
-class IdentificationCode(BaseModel):
-    educationOrganizationIdentificationSystemDescriptor: str
-    identificationCode: str
+class EducationOrganizationIdentificationCode(BaseModel):
+    education_organization_identification_system_descriptor: str = Field(
+        title="educationOrganizationIdentificationSystemDescriptor",
+        alias="educationOrganizationIdentificationSystemDescriptor",
+        description="The school system, state, or agency assigning the identification code.",
+        identity="true",
+    )
+    identification_code: str | None = Field(
+        default=None,
+        title="identificationCode",
+        alias="identificationCode",
+        description="A unique number or alphanumeric code that is assigned to an education organization by a school, school system, state, or other agency or entity.",
+    )
 
 
-class Indicator(BaseModel):
-    indicatorDescriptor: str
-    indicatorGroupDescriptor: str
-    indicatorLevelDescriptor: str
-    designatedBy: str
-    indicatorValue: str
-    periods: List[EducationOrganizationPeriod]
+class EducationOrganizationIndicator(BaseModel):
+    indicator_descriptor: str = Field(
+        title="indicatorDescriptor",
+        alias="indicatorDescriptor",
+        description="The name or code for the indicator or metric.",
+        identity="true",
+    )
+    indicator_group_descriptor: str | None = Field(
+        title="indicatorGroupDescriptor",
+        alias="indicatorGroupDescriptor",
+        description="The name or code for the indicator or metric.",
+    )
+    indicator_level_descriptor: str | None = Field(
+        title="indicatorLevelDescriptor",
+        alias="indicatorLevelDescriptor",
+        description="The value of the indicator or metric, as a value from a controlled vocabulary. The semantics of an empty value is 'not submitted.'",
+    )
+    designaed_by: str | None = Field(
+        title="designatedBy",
+        alias="designatedBy",
+        description="The value of the indicator or metric, as a value from a controlled vocabulary. The semantics of an empty value is 'not submitted.'",
+    )
+    indicator_value: str | None = Field(
+        title="indicatorValue",
+        alias="indicatorValue",
+        description="The value of the indicator or metric, as a value from a controlled vocabulary. The semantics of an empty value is 'not submitted.'",
+    )
+    periods: List[EducationOrganizationPeriod] | None = Field(
+        default=None,
+        description="An unordered collection of educationOrganizationAddressPeriods. The time periods for which the address is valid. For physical addresses, the periods in which the person lived at that address.",
+    )
 
 
 class InstitutionTelephone(BaseModel):
@@ -219,37 +253,69 @@ class SchoolBaseModel(BaseModel):
         example="Grand Oaks High School",
         description="The full, legally accepted name of the institution.",
     )
-    # addresses: List[EducationOrganizationAddress] | None = Field(
-    #     default=None,
-    #     title="addresses",
-    #     description="An unordered collection of educationOrganizationAddresses. The set of elements that describes an address for the education entity, including the street address, city, state, ZIP code, and ZIP code + 4.",
-    # )
-    # administrativeFundingControlDescriptor: str | None = None
-    # charterApprovalSchoolYearTypeReference: CharterApprovalSchoolYearType = None
-    # charterStatusDescriptor: str = None
-    # education_organization_categories: List[EducationOrganizationCategory] = Field(
-    #     title="educationOrganizationCategories",
-    #     alias="educationOrganizationCategories",
-    #     description="An unordered collection of educationOrganizationCategories. The classification of the education agency within the geographic boundaries of a state according to the level of administrative and operational control granted by the state.",
-    # )
-    # identificationCodes: List[IdentificationCode] = None
-    # indicators: List[Indicator] = None
-    # institutionTelephones: List[InstitutionTelephone] = None
-    # internationalAddresses: List[InternationalAddress] = None
-    # internetAccessDescriptor: str = None
-    # magnetSpecialProgramEmphasisSchoolDescriptor: str = None
-    # operationalStatusDescriptor: str = None
-    # localEducationAgencyReference: LocalEducationAgency
-    # schoolCategories: List[SchoolCategory] = None
-    # schoolTypeDescriptor: str = None
-    # shortNameOfInstitution: str = None
-    # titleIPartASchoolDesignationDescriptor: str = None
-    # grade_levels: List[SchoolGradeLevel] = Field(
-    #     title="gradeLevels",
-    #     alias="gradeLevels",
-    #     description="An unordered collection of schoolGradeLevels. The grade levels served at the school.",
-    # )
-    # webSite: str = None
+    addresses: List[EducationOrganizationAddress] | None = Field(
+        default=None,
+        title="addresses",
+        description="An unordered collection of educationOrganizationAddresses. The set of elements that describes an address for the education entity, including the street address, city, state, ZIP code, and ZIP code + 4.",
+    )
+    administrative_funding_control_descriptor: str | None = Field(
+        title="administrativeFundingControlDescriptor",
+        alias="administrativeFundingControlDescriptor",
+        description="The type of education institution as classified by its funding source, for example public or private.",
+    )
+    charter_statur_descriptor: str | None = Field(
+        title="charterStatusDescriptor",
+        alias="charterStatusDescriptor",
+        description="The type of agency that approved the establishment or continuation of a charter school.",
+    )
+    charter_status_descriptor: str | None = Field(
+        title="charterStatusDescriptor",
+        alias="charterStatusDescriptor",
+        description="A school or agency providing free public elementary or secondary education to eligible students under a specific charter granted by the state legislature or other appropriate authority and designated by such authority to be a charter school.",
+    )
+    education_organization_categories: List[EducationOrganizationCategory] = Field(
+        title="educationOrganizationCategories",
+        alias="educationOrganizationCategories",
+        description="An unordered collection of educationOrganizationCategories. The classification of the education agency within the geographic boundaries of a state according to the level of administrative and operational control granted by the state.",
+    )
+    identification_codes: List[EducationOrganizationIdentificationCode] | None = Field(
+        title="identificationCodes",
+        alias="identificationCodes",
+        description="An unordered collection of educationOrganizationIdentificationCodes. A unique number or alphanumeric code assigned to an education organization by a school, school system, a state, or other agency or entity.",
+    )
+    indicators: List[EducationOrganizationIndicator] | None = Field(
+        title="indicators",
+        alias="indicators",
+        description="An unordered collection of educationOrganizationIndicators. An indicator or metric of an education organization.",
+    )
+    institutionTelephones: List[InstitutionTelephone] = None
+    internationalAddresses: List[InternationalAddress] = None
+    internet_access_descriptor: str | None = Field(
+        title="internetAccessDescriptor",
+        alias="internetAccessDescriptor",
+        description="The type of Internet access available.",
+    )
+    magnetSpecialProgramEmphasisSchoolDescriptor: str = None
+    operational_status_descriptor: str | None = Field(
+        title="operationalStatusDescriptor",
+        alias="operationalStatusDescriptor",
+        description="The current operational status of the education organization (e.g., active, inactive).",
+    )
+    localEducationAgencyReference: LocalEducationAgency
+    schoolCategories: List[SchoolCategory] = None
+    school_type_descriptor: str | None = Field(
+        title="schoolTypeDescriptor",
+        alias="schoolTypeDescriptor",
+        description="The type of education institution as classified by its primary focus.",
+    )
+    shortNameOfInstitution: str = None
+    titleIPartASchoolDesignationDescriptor: str = None
+    grade_levels: List[SchoolGradeLevel] = Field(
+        title="gradeLevels",
+        alias="gradeLevels",
+        description="An unordered collection of schoolGradeLevels. The grade levels served at the school.",
+    )
+    webSite: str = None
     class Config(BaseConfig):
         allow_population_by_field_name = True
         json_encoders = {
