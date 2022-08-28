@@ -149,8 +149,13 @@ class InternationalAddress(BaseModel):
     longitude: str = None
 
 
-class CharterApprovalSchoolYearType(BaseModel):
-    schoolYear: int
+class SchoolYearTypeReference(BaseModel):
+    school_year: int = Field(
+        title="schoolYear",
+        alias="schoolYear",
+        description="The street number and street name or post office box number of an address.",
+        identity="true",
+    )
 
 
 class EducationOrganizationCategory(BaseModel):
@@ -216,8 +221,13 @@ class InstitutionTelephone(BaseModel):
     telephoneNumber: str
 
 
-class LocalEducationAgency(BaseModel):
-    localEducationAgencyId: int
+class LocalEducationAgencyReference(BaseModel):
+    local_education_agency_id: int = Field(
+        title="localEducationAgencyId",
+        alias="localEducationAgencyId",
+        description="The identifier assigned to a local education agency.",
+        identity="true",
+    )
 
 
 class PostSecondaryInstitutionReference(BaseModel):
@@ -235,7 +245,13 @@ class SchoolGradeLevel(BaseModel):
 
 
 class SchoolCategory(BaseModel):
-    schoolCategoryDescriptor: str
+    school_category_descriptor: str = Field(
+        title="schoolCategoryDescriptor",
+        alias="schoolCategoryDescriptor",
+        example="uri://ed-fi.org/SchoolCategoryDescriptor#High School",
+        description="The one or more categories of school.",
+        identity="true",
+    )
 
 
 # school models
@@ -263,10 +279,10 @@ class SchoolBaseModel(BaseModel):
         alias="administrativeFundingControlDescriptor",
         description="The type of education institution as classified by its funding source, for example public or private.",
     )
-    charter_statur_descriptor: str | None = Field(
-        title="charterStatusDescriptor",
-        alias="charterStatusDescriptor",
-        description="The type of agency that approved the establishment or continuation of a charter school.",
+    charter_approval_school_year_type_reference: SchoolYearTypeReference | None = Field(
+        title="charterApprovalSchoolYearTypeReference",
+        alias="charterApprovalSchoolYearTypeReference",
+        description="",
     )
     charter_status_descriptor: str | None = Field(
         title="charterStatusDescriptor",
@@ -295,27 +311,51 @@ class SchoolBaseModel(BaseModel):
         alias="internetAccessDescriptor",
         description="The type of Internet access available.",
     )
-    magnetSpecialProgramEmphasisSchoolDescriptor: str = None
+    magnet_special_program_emphasis_school_descriptor: str | None = Field(
+        title="magnetSpecialProgramEmphasisSchoolDescriptor",
+        alias="magnetSpecialProgramEmphasisSchoolDescriptor",
+        description="A school that has been designed: 1) to attract students of different racial/ethnic backgrounds for the purpose of reducing, preventing, or eliminating racial isolation; and/or 2) to provide an academic or social focus on a particular theme (e.g., science/math, performing arts, gifted/talented, or foreign language).",
+    )
     operational_status_descriptor: str | None = Field(
         title="operationalStatusDescriptor",
         alias="operationalStatusDescriptor",
         description="The current operational status of the education organization (e.g., active, inactive).",
     )
-    localEducationAgencyReference: LocalEducationAgency
-    schoolCategories: List[SchoolCategory] = None
+    local_education_agency_reference: LocalEducationAgencyReference | None = Field(
+        title="localEducationAgencyReference",
+        alias="localEducationAgencyReference",
+        description="The type of education institution as classified by its primary focus.",
+    )
+    school_categories: List[SchoolCategory] | None = Field(
+        title="schoolCategories",
+        alias="schoolCategories",
+        description="An unordered collection of schoolCategories. The one or more categories of school.",
+    )
     school_type_descriptor: str | None = Field(
         title="schoolTypeDescriptor",
         alias="schoolTypeDescriptor",
         description="The type of education institution as classified by its primary focus.",
     )
-    shortNameOfInstitution: str = None
-    titleIPartASchoolDesignationDescriptor: str = None
+    short_name_of_institution: str | None = Field(
+        title="shortNameOfInstitution",
+        alias="shortNameOfInstitution",
+        description="A short name for the institution.",
+    )
+    title_i_part_a_school_designation_descriptor: str | None = Field(
+        title="titleIPartASchoolDesignationDescriptor",
+        alias="titleIPartASchoolDesignationDescriptor",
+        description="Denotes the Title I Part A designation for the school.",
+    )
     grade_levels: List[SchoolGradeLevel] = Field(
         title="gradeLevels",
         alias="gradeLevels",
         description="An unordered collection of schoolGradeLevels. The grade levels served at the school.",
     )
-    webSite: str = None
+    web_site: str | None = Field(
+        title="webSite",
+        alias="webSite",
+        description="The public web site address (URL) for the education organization.",
+    )
     class Config(BaseConfig):
         allow_population_by_field_name = True
         json_encoders = {
